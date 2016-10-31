@@ -1,8 +1,9 @@
 var React = require('react');
 var StateMixin = require("../state_mixin");
-var EditBox = require("../edit_box");
+var EditBox = require("../components/common/editBox");
+var Checkbox = require('../components/common/checkboxes');
 
-var USER_RESEARCH = {			
+var USER_RESEARCH = {
 	"done": "Research has already been conducted, either internally or by another vendor. (proceed to product/program vision questionnaire)",
 	"internal": "We intend to conduct user research internally prior to the start date of this engagement.",
  	"vendor": "The vendor will be responsible for the user research."
@@ -107,14 +108,14 @@ var Objective = React.createClass({
 	save: function(cb) {
 		var data = {};
 		var deliverables_data = [];
-		
+
 		for (i=0; i < STATES.length; i++){
 			var stateName = STATES[i];
 			data[stateName] = this.state[stateName];
 		}
 
 		// get states of deliverable content in addition to true/false value
-		for (i=0; i < DELIVERABLE_STATES.length; i++){			
+		for (i=0; i < DELIVERABLE_STATES.length; i++){
 			var stateName = DELIVERABLE_STATES[i];
 			var deliverable = {}
 			deliverable["name"] = stateName;
@@ -161,16 +162,6 @@ var Objective = React.createClass({
 		deliverablesString = createString(selected_deliverables_strings);
 
 
-		var userTypesOptions = [];
-		for (var key in USER_TYPES){
-			userTypesOptions.push(
-				<li className="checkbox" key={key}>
-          <input type="checkbox" id={"userTypesOptions:" + key} onClick={this.handleCheck.bind(this, key)} checked={this.state[key] == "true"}></input>
-				  <label htmlFor={"userTypesOptions:" + key}>{USER_TYPES[key]}</label>
-				</li>
-			);
-		}
-
 		var userResearchOptions = [];
 		for (var key in USER_RESEARCH) {
 			userResearchOptions.push(
@@ -190,15 +181,6 @@ var Objective = React.createClass({
 				</li>
 			);
 		}
-
-		var usersString = "";
-		var userTypes = [];
-		for (var key in USER_TYPES){
-  		if (this.state[key] == "true"){
-  			userTypes.push(USER_TYPES[key]);  		
-  		}
-  	}
-  	usersString = createString(userTypes);
 
 		return (
 			<div>
@@ -228,51 +210,13 @@ var Objective = React.createClass({
 
 				<div className="sub-heading">Users</div>
 
-        <div className="question">
-				  <div className="question-text">Who will the primary users be?</div>
-
-          <fieldset className="usa-fieldset-inputs">
-            <legend className="usa-sr-only">Who will the primary users be?</legend>
-            <ul className="usa-unstyled-list">
-              {userTypesOptions}
-            </ul>
-          </fieldset>
-
-          {(usersString.length > 0)?
-            <div>
-              <div className="resulting-text">The users of the product will include {usersString}.</div>
-
-              <div className="question">
-                <div className="question-text">What user needs will this service address?</div>
-                <div className="question-description">Please list the user needs for each type of user selected above and how this service will address them.</div>
-
-                {(this.state.internal_people == "true")?
-                <div>
-                  <p>Government Employee's Needs</p>
-                  <textarea rows="2" value={this.state.internal_people_needs} onChange={this.handleChange.bind(this, 'internal_people_needs')}></textarea>
-                </div> : null}
-
-                {(this.state.external_people == "true")?
-                <div>
-                  <p>The Public's Needs</p>
-                  <textarea rows="2" value={this.state.external_people_needs} onChange={this.handleChange.bind(this, 'external_people_needs')}></textarea>
-                </div> : null}
-
-                {(this.state.internal_it == "true")?
-                <div>
-                  <p>Internal IT Needs</p>
-                  <textarea rows="2" value={this.state.internal_it_needs} onChange={this.handleChange.bind(this, 'internal_it_needs')}></textarea>
-                </div> : null}
-
-                {(this.state.external_it == "true")?
-                <div>
-                  <p>External IT Needs</p>
-                  <textarea rows="2" value={this.state.external_it_needs} onChange={this.handleChange.bind(this, 'external_it_needs')}></textarea>
-                </div> : null}
-              </div>
-            </div>
-          : null}
-        </div>
+        <Checkbox
+          questionText='Who will the primary users be?'
+          options={USER_TYPES}
+          renderResults={true}
+          resultQuestionText='What user needs will this service address?'
+          resultQuestionDescription='Please list the user needs for each type of user selected above and how this service will address them.'
+        />
 
         <div className="question">
           <div className="question-text">What languages is your service offered in?</div>
@@ -382,7 +326,7 @@ var Objective = React.createClass({
 				<div className="resulting-text">The contractors are required to provide the following services: {deliverablesString}. Each deliverable has been described in more detail below. These functional Requirements will be translated into Epics and User Stories that will be used to populate the Product Backlog.</div>
           {selected_deliverables}
         </div>
-				
+
 				<div className="sub-heading">Location &amp; Kick-Off Meeting</div>
 
         <div className="question">
@@ -461,7 +405,4 @@ var Objective = React.createClass({
 	},
 });
 
-				// <div className="sub-heading">Summary of Objectives</div>
-				// <textarea rows="4"></textarea>
-// to ensure the system supports interoperability,  must be followed. (see section). To ensure the user interface is X, Y (playbook language)
 module.exports = Objective;

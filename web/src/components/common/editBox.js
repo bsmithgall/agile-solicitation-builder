@@ -1,6 +1,6 @@
 var React = require('react');
-
 var marked = require('marked');
+
 marked.setOptions({
   renderer: new marked.Renderer(),
 
@@ -23,6 +23,7 @@ var EditBox = React.createClass({
     onStatusChange: React.PropTypes.func.isRequired,
     onTextChange: React.PropTypes.func.isRequired,
   },
+
   getInitialState: function() {
     return {};
   },
@@ -49,15 +50,36 @@ var EditBox = React.createClass({
     if(this.props.editing) {
       return (
         <div className="edit-box">
-          <div className="edit" onClick={this.toggleEdit.bind(this, false)}>Done</div>
-          <textarea className="form-control" rows={this.calculateRows(this.props.text)} defaultValue={this.props.text} onChange={this.handleChange}></textarea>
+          <div
+            className="edit"
+            onClick={this.toggleEdit.bind(this, false)}
+          >
+            Done
+          </div>
+
+          <textarea
+            className="form-control"
+            rows={this.calculateRows(this.props.text)}
+            defaultValue={this.props.text}
+            onChange={this.handleChange}>
+          </textarea>
         </div>
       );
     } else {
       return (
         <div className="edit-box">
-          <div className="edit" onClick={this.toggleEdit.bind(this, true)}>Edit</div>
-          <div className="edit-content" style={displayStyle} dangerouslySetInnerHTML={renderedMarkdown}></div>
+          <div
+            className="edit"
+            onClick={this.toggleEdit.bind(this, true)}
+          >
+            Edit
+          </div>
+
+          <div
+            className="edit-content"
+            style={displayStyle}
+            dangerouslySetInnerHTML={renderedMarkdown}>
+          </div>
         </div>
       );
     }

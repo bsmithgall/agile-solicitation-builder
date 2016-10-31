@@ -1,5 +1,6 @@
 var React = require('react');
 var History = require('react-router').History;
+var questionList = require('../question_list');
 
 var Sidebar = React.createClass({
   mixins: [History],

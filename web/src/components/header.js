@@ -3,6 +3,7 @@ var IndexLink = require('react-router').IndexLink;
 var LogoutButton = require('../auth/login-button');
 
 var Header = React.createClass({
+
   render: function() {
     var inheritStyle = {
       color: "inherit",
