@@ -1,7 +1,7 @@
 var React = require('react');
 var StateMixin = require("../state_mixin");
 var EditBox = require("../components/common/editBox");
-var Checkbox = require('../components/common/checkboxes');
+var Checkbox = require('../components/common/checkbox');
 
 var USER_RESEARCH = {
 	"done": "Research has already been conducted, either internally or by another vendor. (proceed to product/program vision questionnaire)",

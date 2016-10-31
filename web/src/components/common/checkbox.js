@@ -53,7 +53,7 @@ var Checkbox = React.createClass({
   renderResultingText: function() {
     if (this.props.renderResults === true && this.state.resultString.length > 0) {
       return (
-        <div>
+        <div className="check-resulting-text">
           <div className="resulting-text">The users of the product will include {this.state.resultString}</div>
           <div className="question">
             <div className="question-text">{this.props.resultQuestionText}</div>
@@ -74,7 +74,7 @@ var Checkbox = React.createClass({
         <li className="checkbox" key={key}>
           <input
             type="checkbox"
-            id={"userTypesOptions:" + key}
+            id={"checkboxOptions-" + key}
             onClick={this.handleCheck.bind(this, key)}
             checked={this.state.options[key] === true}
           />
