@@ -49,22 +49,22 @@ gulp.task('bundling', function(){
   .pipe(eslint.format())
   // .pipe(eslint.failAfterError())
   .pipe(buffer()) // <----- convert from streaming to buffered vinyl file object
-  .pipe(uglify().on('error', gutil.log))
+  // .pipe(uglify().on('error', gutil.log))
   .pipe(rename('bundle.js'))
   .pipe(gulp.dest('./build'));
 });
 
 gulp.task('bundlingWatch', function () {
-  	var watcher  = watchify(bundler);
+    var watcher  = watchify(bundler);
 
       return watcher
-  	    .on('update', function () { // When any files update
-  	        var updateStart = Date.now();
-  	        console.log('Updating!');
+        .on('update', function () { // When any files update
+            var updateStart = Date.now();
+            console.log('Updating!');
 
-  	        watcher.bundle() // Create new bundle that uses the cache for high performance
-  	        	.on('error', handleErrors)
-  	        	.pipe(source('./src/app.js'))
+            watcher.bundle() // Create new bundle that uses the cache for high performance
+              .on('error', handleErrors)
+              .pipe(source('./src/app.js'))
               .pipe(eslint({
                   baseConfig: {
                     "ecmaFeatures": {
@@ -75,14 +75,14 @@ gulp.task('bundlingWatch', function () {
               .pipe(eslint.format())
               // .pipe(eslint.failAfterError())
               .pipe(buffer()) // <----- convert from streaming to buffered vinyl file object
-              .pipe(uglify().on('error', gutil.log))
-  		    	.pipe(rename('bundle.js'))
-  		    	.pipe(gulp.dest('./build'));
-  	        console.log('Updated!', (Date.now() - updateStart) + 'ms');
-  	    })
-  	    .bundle() // Create the initial bundle when starting the task
-  	    .on('error', handleErrors)
-  	    .pipe(source('./src/app.js'))
+              // .pipe(uglify().on('error', gutil.log))
+            .pipe(rename('bundle.js'))
+            .pipe(gulp.dest('./build'));
+            console.log('Updated!', (Date.now() - updateStart) + 'ms');
+        })
+        .bundle() // Create the initial bundle when starting the task
+        .on('error', handleErrors)
+        .pipe(source('./src/app.js'))
         .pipe(eslint({
             baseConfig: {
               "ecmaFeatures": {
@@ -93,9 +93,9 @@ gulp.task('bundlingWatch', function () {
         .pipe(eslint.format())
         // .pipe(eslint.failAfterError())
         .pipe(buffer()) // <----- convert from streaming to buffered vinyl file object
-        .pipe(uglify().on('error', gutil.log))
-      	.pipe(rename('bundle.js'))
-      	.pipe(gulp.dest('./build'));
+        // .pipe(uglify().on('error', gutil.log))
+        .pipe(rename('bundle.js'))
+        .pipe(gulp.dest('./build'));
 });
 
 var lintFunction = stylelint('./assets/css/**/*.scss', {});

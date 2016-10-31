@@ -12,50 +12,50 @@ var LoginButton = require('./auth/login-button');
 var RegisterButton = require('./auth/register-button');
 
 var Welcome = React.createClass({
-	mixins: [AuthMixin],
+  mixins: [AuthMixin],
 
-	getInitialState: function() {
-		// This component could be loaded sometime
-		// after the initial page load, in which
-		// case it won't get an event for the initial
-		// login status check.  So, to mitigate that,
-		// pretend we got the event after a short
-		// delay.  The delay is to allow React time
-		// to setup the component state.
-		setTimeout(this.loginStateChanged, 50);
-		return {
-			rfqs: "",
-		};
-	},
+  getInitialState: function() {
+    // This component could be loaded sometime
+    // after the initial page load, in which
+    // case it won't get an event for the initial
+    // login status check.  So, to mitigate that,
+    // pretend we got the event after a short
+    // delay.  The delay is to allow React time
+    // to setup the component state.
+    setTimeout(this.loginStateChanged, 50);
+    return {
+      rfqs: "",
+    };
+  },
 
-	loginStateChanged: function() {
-		if(this.state.loggedIn) {
-			getRFQs(function(content){
-	      this.setState({
-	        rfqs: content['data'],
-	      });
-	    }.bind(this));
-		} else {
-			this.setState({ rfqs: "" });
-		}
-	},
+  loginStateChanged: function() {
+    if(this.state.loggedIn) {
+      getRFQs(function(content){
+        this.setState({
+          rfqs: content['data'],
+        });
+      }.bind(this));
+    } else {
+      this.setState({ rfqs: "" });
+    }
+  },
 
-	render: function() {
-		var rfqs = [];
-		for (var i=0; i < this.state.rfqs.length; i++) {
-			var this_rfq = this.state.rfqs[i];
-			var agency = this_rfq['agency'];
-			var doctype = this_rfq['doc_type'];
-			var url = '#/rfp/' + this_rfq['id'] + '/question/1';
-			rfqs.push(
-				<li key={this_rfq['id']}>
-					<a href={url} >
-						#{this_rfq['id']}, {this_rfq['doc_type']} for <b>{this_rfq['program_name']}</b> with {this_rfq['agency']}
-					</a>
-				</li>
-			);
-		}
-		return (
+  render: function() {
+    var rfqs = [];
+    for (var i=0; i < this.state.rfqs.length; i++) {
+      var this_rfq = this.state.rfqs[i];
+      var agency = this_rfq['agency'];
+      var doctype = this_rfq['doc_type'];
+      var url = '#/rfp/' + this_rfq['id'] + '/question/1';
+      rfqs.push(
+        <li key={this_rfq['id']}>
+          <a href={url} >
+            #{this_rfq['id']}, {this_rfq['doc_type']} for <b>{this_rfq['program_name']}</b> with {this_rfq['agency']}
+          </a>
+        </li>
+      );
+    }
+    return (
       <div className="usa-grid">
         <div className="usa-width-two-thirds">
           <h4>Welcome to the Agile Solicitation Builder, formerly the Playbook in Action! Before you begin, please consider the following:</h4>
@@ -85,18 +85,18 @@ var Welcome = React.createClass({
             </ul></div> : null}
 
           <br />
-					<LoginButton hideIfLoggedIn={true} />
-					<RegisterButton />
-					{(this.state.loggedIn) ?
+          <LoginButton hideIfLoggedIn={true} />
+          <RegisterButton />
+          {(this.state.loggedIn) ?
           <IndexLink to="/rfp">
-						<Button bsStyle="primary">
-            	Start	New RFQ
-          	</Button>
+            <Button bsStyle="primary">
+              Start New RFQ
+            </Button>
           </IndexLink> : null}
         </div>
       </div>
-		);
-	},
+    );
+  },
 });
 
 module.exports = Welcome;

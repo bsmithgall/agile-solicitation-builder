@@ -3,12 +3,12 @@ var StateMixin = require("../state_mixin");
 var EditBox = require("../edit_box");
 
 var STATES = [
-	"descriptionOfServices",
-	"farCode",
-	"iterationPoPNumber",
-	"iterationPoPUnit",
-	"naicsText",
-	"optionPeriods",
+  "descriptionOfServices",
+  "farCode",
+  "iterationPoPNumber",
+  "iterationPoPUnit",
+  "naicsText",
+  "optionPeriods",
   "paymentSchedule",
   "basePeriodDurationNumber",
   "basePeriodDurationUnit",
@@ -41,38 +41,38 @@ var ADD_CLIN = [
 ];
 
 var CLIN_CONTENT = {
-	"CLIN 1001": "Option Period 1",
-	"CLIN 2001": "Option Period 2",
-	"CLIN 3001": "Option Period 3",
-	"CLIN 4001": "Option Period 4",
-	"CLIN 5001": "Option Period 5",
-	"CLIN 6001": "Option Period 6",
-	"CLIN 7001": "Option Period 7",
-	"CLIN 8001": "Option Period 8",
+  "CLIN 1001": "Option Period 1",
+  "CLIN 2001": "Option Period 2",
+  "CLIN 3001": "Option Period 3",
+  "CLIN 4001": "Option Period 4",
+  "CLIN 5001": "Option Period 5",
+  "CLIN 6001": "Option Period 6",
+  "CLIN 7001": "Option Period 7",
+  "CLIN 8001": "Option Period 8",
 };
 
 var FAR_CODES = {
-	"FAR 8.4": "Federal Supply Schedules",
-	"FAR 16.504": "Indefinite Quantity",
+  "FAR 8.4": "Federal Supply Schedules",
+  "FAR 16.504": "Indefinite Quantity",
 };
 
 
 var BASE_FEE_OPTIONS = {
-	"base_award": "Award Fee",
-	"base_incentive": "Incentive Fee",
-	"none": "Neither",
+  "base_award": "Award Fee",
+  "base_incentive": "Incentive Fee",
+  "none": "Neither",
 };
 
 var OPTION_FEE_OPTIONS = {
-	"option_award": "Award Fee",
-	"option_incentive": "Incentive Fee",
-	"none": "Neither",
+  "option_award": "Award Fee",
+  "option_incentive": "Incentive Fee",
+  "none": "Neither",
 };
 
 var Clin = React.createClass({
-	render: function() {
-		return (
-			<form id="additional-clin" class="additional-clin">
+  render: function() {
+    return (
+      <form id="additional-clin" class="additional-clin">
         <table>
           <tr>
             <td colSpan="2"><input type="text" className="long-response" id="row1"/></td>
@@ -97,157 +97,157 @@ var Clin = React.createClass({
             <td><input type="text" id="row6b" /></td>
           </tr>
         </table>
-			</form>
-		);
-	}
+      </form>
+    );
+  }
 });
 
 var Services = React.createClass({
-	mixins: [StateMixin],
-	componentDidMount: function() {
-		var rfqId = getId(window.location.hash);
+  mixins: [StateMixin],
+  componentDidMount: function() {
+    var rfqId = getId(window.location.hash);
     get_data(2, rfqId, function(content){
-    	var componentStates = getComponents(content["data"]);
+      var componentStates = getComponents(content["data"]);
       this.setState( componentStates );
     }.bind(this));
     getCLINs(rfqId, function(clins){
       this.setState({clins: clins["data"] });
     }.bind(this));
   },
-	getInitialState: function() {
-		var initialStates = getStates(STATES);
-		initialStates["addClin"] = false;
-		initialStates["clin"] = null;
-		return initialStates;
-	},
-	updateFee: function(key, event) {
-		var value = event.target.value;
-		if (key === "baseFee"){
-			this.setState({baseFee: value});
-		}
-		if (key === "optionFee"){
-			this.setState({optionFee: value});
-		}
-	},
-	updateNaicsText: function(event) {
-		var farCode = event.target.value;
-		var naicsText = "This requirement will be solicited under the following North American Industrial Classification System (NAICS) Code: 541512, Computer Systems Design Services. This Task Order will be awarded under " + farCode + " which governs orders placed under " + FAR_CODES[farCode] + " contracts.";
-		this.setState({
-			naicsText: naicsText,
-			farCode: farCode,
-		});
-	},
-	toggleLocation: function(responseText) {
-		if (responseText === "yes") {
-			this.setState({
-  	    locationRequirement: true,
-   	 });
-		}
-		if (responseText === "no") {
-			this.setState({
-  	    locationRequirement: false,
-   	 });
-		}
-	},
+  getInitialState: function() {
+    var initialStates = getStates(STATES);
+    initialStates["addClin"] = false;
+    initialStates["clin"] = null;
+    return initialStates;
+  },
+  updateFee: function(key, event) {
+    var value = event.target.value;
+    if (key === "baseFee"){
+      this.setState({baseFee: value});
+    }
+    if (key === "optionFee"){
+      this.setState({optionFee: value});
+    }
+  },
+  updateNaicsText: function(event) {
+    var farCode = event.target.value;
+    var naicsText = "This requirement will be solicited under the following North American Industrial Classification System (NAICS) Code: 541512, Computer Systems Design Services. This Task Order will be awarded under " + farCode + " which governs orders placed under " + FAR_CODES[farCode] + " contracts.";
+    this.setState({
+      naicsText: naicsText,
+      farCode: farCode,
+    });
+  },
+  toggleLocation: function(responseText) {
+    if (responseText === "yes") {
+      this.setState({
+        locationRequirement: true,
+     });
+    }
+    if (responseText === "no") {
+      this.setState({
+        locationRequirement: false,
+     });
+    }
+  },
   generateClin: function(){
-  	if (this.state.addClin === true){
+    if (this.state.addClin === true){
 
-  		// check to see that something has been filled in
-  		var inputFilled = false;
-  		for (i=0; i < ADD_CLIN.length; i++){
-  			var row = $("#" + ADD_CLIN[i])[0];
-  			if (row.value.length > 0) {
-  				inputFilled = true;
-  				break;
-  			}
-  		}
-  		// if yes, save value and display as completed CLIN
-  		if (inputFilled){
-  			var rfqId = getId(window.location.hash);
-  			clinData = {};
-  			// capture clin data
-  			for (i=0; i < ADD_CLIN.length; i++){
-  				var row = ADD_CLIN[i];
-  				clinData[row] = $("#" + row)[0].value;
-  			}
-  			createCLIN(clinData, rfqId, function(data) {
-  				this.setState({
-  					addClin: false,
-  					clin: data["data"],
-  				});
+      // check to see that something has been filled in
+      var inputFilled = false;
+      for (i=0; i < ADD_CLIN.length; i++){
+        var row = $("#" + ADD_CLIN[i])[0];
+        if (row.value.length > 0) {
+          inputFilled = true;
+          break;
+        }
+      }
+      // if yes, save value and display as completed CLIN
+      if (inputFilled){
+        var rfqId = getId(window.location.hash);
+        clinData = {};
+        // capture clin data
+        for (i=0; i < ADD_CLIN.length; i++){
+          var row = ADD_CLIN[i];
+          clinData[row] = $("#" + row)[0].value;
+        }
+        createCLIN(clinData, rfqId, function(data) {
+          this.setState({
+            addClin: false,
+            clin: data["data"],
+          });
 
-  			}.bind(this));
-  			this.save();
-  			location.reload();
-  		}
-  		// if not, alert and return
-  		else {
-				alert("Please add some text before saving!");
-  			return;
-  		}
-  	}
-  	else {
-  		this.setState({ addClin: true });
-  	}
+        }.bind(this));
+        this.save();
+        location.reload();
+      }
+      // if not, alert and return
+      else {
+        alert("Please add some text before saving!");
+        return;
+      }
+    }
+    else {
+      this.setState({ addClin: true });
+    }
   },
   cancelGenerateClin: function(){
-  	this.setState({ addClin: false });
+    this.setState({ addClin: false });
   },
-	save: function(cb) {
-		var data = {};
+  save: function(cb) {
+    var data = {};
 
-		for (i=0; i < STATES.length; i++){
-			var stateName = STATES[i];
-			data[stateName] = this.state[stateName];
-		}
+    for (i=0; i < STATES.length; i++){
+      var stateName = STATES[i];
+      data[stateName] = this.state[stateName];
+    }
 
-		// get data from FAR code section
-		var rfqId = getId(window.location.hash);
+    // get data from FAR code section
+    var rfqId = getId(window.location.hash);
     put_data(2, "get_content", rfqId, data, cb);
 
-	},
-	render: function() {
-		// create CLIN tables
-		var bPoP = <span>{this.state.basePeriodDurationNumber} {this.state.basePeriodDurationUnit}</span>;
-		var oPoP = <span>{this.state.optionPeriodDurationNumber} {this.state.optionPeriodDurationUnit}</span>;
-		var iPoP = <span>{this.state.iterationPoPNumber} {this.state.iterationPoPUnit}</span>
+  },
+  render: function() {
+    // create CLIN tables
+    var bPoP = <span>{this.state.basePeriodDurationNumber} {this.state.basePeriodDurationUnit}</span>;
+    var oPoP = <span>{this.state.optionPeriodDurationNumber} {this.state.optionPeriodDurationUnit}</span>;
+    var iPoP = <span>{this.state.iterationPoPNumber} {this.state.iterationPoPUnit}</span>
 
-		var FARS = [];
-		for (var key in FAR_CODES) {
-			FARS.push(
-				<li className="radio" key={key}>
+    var FARS = [];
+    for (var key in FAR_CODES) {
+      FARS.push(
+        <li className="radio" key={key}>
           <input type="radio" id={"farCode:" + key} value={key} checked={key == this.state.farCode} />
-					<label htmlFor={"farCode:" + key}>{key} - { FAR_CODES[key] }</label>
-				</li>
-			);
-		}
+          <label htmlFor={"farCode:" + key}>{key} - { FAR_CODES[key] }</label>
+        </li>
+      );
+    }
 
-		var BASE_FEES = [];
-		for (var key in BASE_FEE_OPTIONS) {
-			var value = BASE_FEE_OPTIONS[key];
-			BASE_FEES.push(
-				<li className="radio" key={key}>
+    var BASE_FEES = [];
+    for (var key in BASE_FEE_OPTIONS) {
+      var value = BASE_FEE_OPTIONS[key];
+      BASE_FEES.push(
+        <li className="radio" key={key}>
           <input type="radio" id={"baseFee:" + key} value={key} checked={key == this.state.baseFee} />
-					<label htmlFor={"baseFee:" + key}>{ BASE_FEE_OPTIONS[key] }</label>
-				</li>
-			);
-		}
+          <label htmlFor={"baseFee:" + key}>{ BASE_FEE_OPTIONS[key] }</label>
+        </li>
+      );
+    }
 
-		var OPTION_FEES = [];
-		for (var key in OPTION_FEE_OPTIONS) {
-			var value = OPTION_FEE_OPTIONS[key];
-			OPTION_FEES.push(
-				<li className="radio" key={key}>
+    var OPTION_FEES = [];
+    for (var key in OPTION_FEE_OPTIONS) {
+      var value = OPTION_FEE_OPTIONS[key];
+      OPTION_FEES.push(
+        <li className="radio" key={key}>
           <input type="radio" id={"optionFee:" + key} value={key} checked={key == this.state.optionFee} />
-					<label htmlFor={"optionFee:" + key}>{ OPTION_FEE_OPTIONS[key] }</label>
-				</li>
-			);
-		}
+          <label htmlFor={"optionFee:" + key}>{ OPTION_FEE_OPTIONS[key] }</label>
+        </li>
+      );
+    }
 
-		var ADDITIONAL_CLINS = [];
-		for (var clin in this.state.clins){
-			var this_clin = this.state.clins[clin];
-			ADDITIONAL_CLINS.push(
+    var ADDITIONAL_CLINS = [];
+    for (var clin in this.state.clins){
+      var this_clin = this.state.clins[clin];
+      ADDITIONAL_CLINS.push(
         <table key={clin}>
           <tr>
             <td colSpan="2">{this_clin["row1"]}</td>
@@ -283,15 +283,15 @@ var Services = React.createClass({
             : null}
         </table>
       );
-		}
+    }
 
-		var CLINS = [];
-		var counter = 0;
-		var optionPeriods = this.state.optionPeriods;
+    var CLINS = [];
+    var counter = 0;
+    var optionPeriods = this.state.optionPeriods;
 
-		for (var key in CLIN_CONTENT) {
-			if (counter < parseInt(optionPeriods, 10)) {
-				CLINS.push(
+    for (var key in CLIN_CONTENT) {
+      if (counter < parseInt(optionPeriods, 10)) {
+        CLINS.push(
           <table key={counter}>
             <tr>
               <td colSpan="2">{CLIN_CONTENT[key]}: {oPoP}</td>
@@ -316,15 +316,15 @@ var Services = React.createClass({
               <td>$XXXXXXX (vendor completes)</td>
             </tr>
           </table>
-				)
-			counter += 1;
-			}
-		}
+        )
+      counter += 1;
+      }
+    }
 
-		return (
-			<div>
-				<div className="page-heading">Services and Prices</div>
-				<div className="responder-instructions">These questions are typically answered by the CO.</div>
+    return (
+      <div>
+        <div className="page-heading">Services and Prices</div>
+        <div className="responder-instructions">These questions are typically answered by the CO.</div>
 
         <div className="question">
           <div className="question-text">Brief Description of Services</div>
@@ -338,7 +338,7 @@ var Services = React.createClass({
           </EditBox>
         </div>
 
-				<div className="sub-heading">Type of Contract</div>
+        <div className="sub-heading">Type of Contract</div>
 
         <div className="question">
           <div className="question-text">What type of contract will this be?</div>
@@ -380,7 +380,7 @@ var Services = React.createClass({
           </EditBox>
         </div>
 
-				<div className="sub-heading">Budget</div>
+        <div className="sub-heading">Budget</div>
 
         <div className="question">
           <div className="question-text">What is the maximum budget for your project (in USD)?</div>
@@ -436,7 +436,7 @@ var Services = React.createClass({
           }
         </div>
 
-				<div className="sub-heading">Base Periods</div>
+        <div className="sub-heading">Base Periods</div>
 
         <div className="question">
           <div className="question-text">How long would you like the period of performance for the <b>base period</b> to be?</div>
@@ -483,7 +483,7 @@ var Services = React.createClass({
           }
         </div>
 
-				<div className="sub-heading">Option Periods</div>
+        <div className="sub-heading">Option Periods</div>
 
         <div className="question">
           <div className="question-text">In addition to your base period, how many option periods would you like? We suggest no more than 3.</div>
@@ -553,8 +553,8 @@ var Services = React.createClass({
           </div>
         </div>
 
-				<div className="sub-heading">Funding &amp; Payment</div>
-				<div className="guidance-text">Funding for performance will be allocated and obligated for each exercised Contract Line Item (CLIN).</div>
+        <div className="sub-heading">Funding &amp; Payment</div>
+        <div className="guidance-text">Funding for performance will be allocated and obligated for each exercised Contract Line Item (CLIN).</div>
 
         <div className="question">
           <div className="question-text">Contract Line Item Number (CLIN) Format</div>
@@ -608,9 +608,9 @@ var Services = React.createClass({
             onTextChange={this.handleChange.bind(this, 'paymentSchedule')}>
           </EditBox>
         </div>
-			</div>
-		);
-	},
+      </div>
+    );
+  },
 });
 
 
