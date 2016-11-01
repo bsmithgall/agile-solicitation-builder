@@ -8,7 +8,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "node_modules/.bin/mocha --recursive 'test/**/*.js' --compilers js:babel-register -r ./mocha.setup.js"
+    "test": "node_modules/.bin/mocha --recursive 'test/**/*.js' --compilers js:babel-register -r ./test/mocha.setup.js"
   },
   "author": "",
   "license": "ISC",

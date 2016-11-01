@@ -3,6 +3,7 @@ var EditBox = require('./EditBox');
 
 var radioButtonPropTypes = {
   questionText: React.PropTypes.string.isRequired,
+  currentLabel: React.PropTypes.string,
   renderIfSelected: React.PropTypes.oneOf(['editBox', 'input', 'text', 'none']).isRequired,
   radioButtonChange: React.PropTypes.func.isRequired,
   radioButtonInputChange: React.PropTypes.func,
@@ -38,6 +39,7 @@ var RadioButtons = React.createClass({
           <input
             type="radio"
             id={elemId + '-radioChoice-' + option.label}
+            onChange={props.radioButtonChange}
             checked={option.label === props.currentLabel}
           />
           <label htmlFor={elemId + '-radioChoice-' + option.label}>{option.label}</label>
@@ -60,8 +62,8 @@ var RadioButtons = React.createClass({
         case 'input':
           if (currentChecked.renderInput) {
             return (
-              <div>
-                <label htmlFor="">{currentChecked.inputLabel}</label>
+              <div className="resulting-input">
+                <label>{currentChecked.inputLabel}</label>
                 <input type="text" className="medium-response" onChange={this.props.radioButtonInputChange} />
               </div>
             );
@@ -91,10 +93,7 @@ var RadioButtons = React.createClass({
 
           <fieldset className="usa-fieldset-inputs">
             <legend className="usa-sr-only">{this.props.questionText}</legend>
-            <ul
-              className="usa-unstyled-list"
-              onChange={this.props.radioButtonChange}
-            >
+            <ul className="usa-unstyled-list">
               {this.makeRadioButtonChoices(elemId)}
             </ul>
           </fieldset>
