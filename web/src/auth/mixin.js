@@ -31,14 +31,14 @@ function login(username, password, callback) {
       var token = data.token;
       failed = false;
       $.ajax({
-  			type: "GET",
-  			url: "/api/token",
-  			username: token,
-  			password: 'none',
-  			success: function() {
+        type: "GET",
+        url: "/api/token",
+        username: token,
+        password: 'none',
+        success: function() {
           callback(token);
         }
-  		});
+      });
     },
     complete: function() {
       if(failed) {
@@ -56,11 +56,11 @@ function login(username, password, callback) {
 }
 
 function logout(callback) {
-	$.ajax({
-		type: 'GET',
-		url: '/api/token',
-		username: '--invalid--',
-		password: '--invalid--',
+  $.ajax({
+    type: 'GET',
+    url: '/api/token',
+    username: '--invalid--',
+    password: '--invalid--',
     complete: function() {
       if(_history) {
         _history.pushState(null, '/');
@@ -69,7 +69,7 @@ function logout(callback) {
         callback();
       }
     }
-	});
+  });
 }
 
 $.ajax({
