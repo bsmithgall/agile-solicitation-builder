@@ -1,12 +1,12 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
 
-import Checkbox from '../../../src/components/common/checkbox'
+import CheckboxList from '../../../src/components/common/CheckboxList'
 
 describe('Components', function() {
 
   var component, opts;
-  describe('<Checkbox />', function() {
+  describe('<CheckboxList />', function() {
     beforeEach(function() {
       opts = {
         testfoo: 'foo',
@@ -14,7 +14,7 @@ describe('Components', function() {
       }
 
       component = mount(
-        <Checkbox
+        <CheckboxList
           questionText='foo'
           options={opts}
           renderResults={true}

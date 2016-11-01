@@ -17,7 +17,7 @@ var Request = require('./request');
 var RequestOverview = require('./request_overview');
 var Question = require('./question');
 var Results = require('./results');
-var Header = require('./components/header');
+var Header = require('./components/Header');
 
 var App = React.createClass({
   render: function() {

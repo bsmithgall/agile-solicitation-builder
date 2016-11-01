@@ -1,6 +1,6 @@
 var React = require('react');
 var StateMixin = require("../state_mixin");
-var EditBox = require("../components/common/editBox");
+var EditBox = require("../components/common/EditBox");
 
 // states data is defined in seeds.py, and must be listed here to be accessed and saved in the database
 var STATES = [

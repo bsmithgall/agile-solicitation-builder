@@ -1,14 +1,23 @@
 var React = require('react');
 var StateMixin = require('../../state_mixin');
 
-const initState = {
+var initState = {
   resultString: '',
   options: {},
   renderedOptions: {}
 }
 
-var Checkbox = React.createClass({
+var checkboxListPropTypes = {
+  resultString: React.PropTypes.string,
+  resultQuestionText: React.PropTypes.string,
+  resultQuestionDescription: React.PropTypes.string,
+  options: React.PropTypes.object
+}
+
+var CheckboxList = React.createClass({
   mixins: [StateMixin],
+
+  propTypes: checkboxListPropTypes,
 
   getInitialState: function() {
     for (var option in this.props.options) {
@@ -79,7 +88,7 @@ var Checkbox = React.createClass({
             checked={this.state.options[key] === true}
           />
 
-				  <label htmlFor={"userTypesOptions:" + key}>{this.props.options[key]}</label>
+          <label htmlFor={"userTypesOptions:" + key}>{this.props.options[key]}</label>
         </li>
       )
     }
@@ -101,4 +110,4 @@ var Checkbox = React.createClass({
   }
 })
 
-module.exports = Checkbox;
+module.exports = CheckboxList;

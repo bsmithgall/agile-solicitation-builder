@@ -13,7 +13,7 @@ var History = require('react-router').History;
 
 // Custom elements
 var questionList = require('./question_list');
-var Sidebar = require('./components/sidebar');
+var Sidebar = require('./components/Sidebar');
 
 var Request = React.createClass({
   loadData: function(cb) {

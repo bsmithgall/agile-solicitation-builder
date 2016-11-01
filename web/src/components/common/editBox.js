@@ -25,14 +25,19 @@ var EditBox = React.createClass({
   },
 
   getInitialState: function() {
-    return {};
+    return {editing: this.props.editing};
   },
-  toggleEdit: function(editing) {
-    this.props.onStatusChange(editing);
+
+  toggleEdit: function() {
+    var newState = Object.assign({}, this.state);
+    newState.editing = !newState.editing;
+    this.setState(newState);
   },
+
   handleChange: function(event){
     this.props.onTextChange(event);
   },
+
   calculateRows: function(text){
     var chars = text.length;
     var rows = Math.ceil(chars / 113);
@@ -40,6 +45,7 @@ var EditBox = React.createClass({
     rows += newLines;
     return Math.max(rows, 4);
   },
+
   render: function() {
     var renderedMarkdown = {__html: marked(this.props.text)};
     var displayStyle = {
@@ -47,12 +53,12 @@ var EditBox = React.createClass({
       padding: '1rem'
     };
 
-    if(this.props.editing) {
+    if(this.state.editing) {
       return (
         <div className="edit-box">
           <div
             className="edit"
-            onClick={this.toggleEdit.bind(this, false)}
+            onClick={this.toggleEdit}
           >
             Done
           </div>
@@ -70,7 +76,7 @@ var EditBox = React.createClass({
         <div className="edit-box">
           <div
             className="edit"
-            onClick={this.toggleEdit.bind(this, true)}
+            onClick={this.toggleEdit}
           >
             Edit
           </div>
