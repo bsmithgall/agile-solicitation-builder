@@ -16,9 +16,10 @@ describe('Components', function() {
       component = mount(
         <RadioButtons
           questionText='test radio buttons'
-          editBoxIfSelected={false}
+          renderIfSelected='none'
           options={opts}
           elemId={1}
+          radioButtonChange={sinon.spy()}
         />
       )
 

@@ -1,5 +1,3 @@
-var $ = require('jquery');
-
 function getId(url){
   var number = url.split("#/rfp/")[1].split("/question")[0];
   return parseInt(number);
@@ -16,9 +14,6 @@ function getStates(states){
 
 function getComponents(data){
   states = Object.keys(data);
-  // for (i=0; i < states.length; i++){
-  //  console.log('"' + states[i] + '",');
-  // }
   componentStates = {};
   for (i=0; i < states.length; i++){
     var state = states[i];

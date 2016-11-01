@@ -1,35 +1,21 @@
 var React = require('react');
 var StateMixin = require("./state_mixin");
 
+var RadioButtons = require('./components/common/RadioButtons');
+var RadioButtonsMixin = require('./components/common/RadioButtonsMixin');
+
 // Bootstrap
 var Button = require('react-bootstrap').Button;
 
 // Router stuff
 var Link = require('react-router').Link;
 
-// "Contact": "a new purchase under FAR 15 (Contract)",
-var DOC_TYPES = {
-  "Purchase Order": "a new purchase under FAR 13 (Purchase Order)",
-  "Task Order": "being issued off an existing Indefinite Delivery Indefinite Quantity (ID/IQ) (Task Order)",
-  "Call": "being ordered off an existing Blanket Purchase Agreement (BPA) (Call)",
-};
-
-var SETASIDES = {
-  "Small Business": "Small Business",
-  "8(a) Business Development Participants": "8(a) Business Development Participants",
-  "HUBZone Small Business Concerns": "HUBZone Small Business Concerns",
-  "Service-disabled Veteran-owned Small Business Concerns": "Service-disabled Veteran-owned Small Business Concerns",
-  "Economically Disadvantaged Women-owned Small Business Concerns": "Economically Disadvantaged Women-owned Small Business Concerns",
-  "The Women-Owned Small Business Program": "The Women-Owned Small Business Program",
-  "none": "None of the above",
-};
-
 // IDIQ & BPA require
 // This is an RFQ for the alliant BPA #XXXXX
 // This is an RFQ for an award under ID/IQ #XXXXX
 
 var RequestOverview = React.createClass({
-  mixins: [StateMixin],
+  mixins: [StateMixin, RadioButtonsMixin],
   getInitialState: function() {
     return {
       docType: "",
@@ -46,9 +32,17 @@ var RequestOverview = React.createClass({
       this.setState({ agencies: content["data"] });
     }.bind(this));
   },
+
+  formatDocType: function() {
+    var docTypeParts = this.state.docType.split(' (');
+    var lastPart = docTypeParts[docTypeParts.length - 1];
+    return lastPart.replace(')', '');
+  },
+
   handleCreateRFQ: function() {
+    debugger;
     createRFQ({
-      doc_type: this.state.docType,
+      doc_type: this.formatDocType(),
       agency: this.state.agency,
       setaside: this.state.setaside,
       base_number: this.state.baseNumber,
@@ -60,17 +54,7 @@ var RequestOverview = React.createClass({
       window.location.replace(url);
     });
   },
-  updateDocType: function(event) {
-    var base = false;
-    var value = event.target.value;
-    if (value  === "Task Order" || value === "Call"){
-      base = true;
-    }
-    this.setState({
-      docType: event.target.value,
-      baseNumberNeeded: base,
-    });
-  },
+
   render: function() {
     // Create the agency names list
     var agencyNameOptions = [(
@@ -82,32 +66,6 @@ var RequestOverview = React.createClass({
         <option key={agency["abbreviation"]} value={agency["abbreviation"]}>{agency["full_name"]} ({agency["abbreviation"]})</option>
       );
     }
-
-    // Create the doc type radio list
-    var docTypeOptions = [];
-    for(var key in DOC_TYPES) {
-      docTypeOptions.push(
-        <li className="radio" key={key}>
-          <input id={"docType:" + key} type="radio" value={key} checked={key == this.state.docType} />
-          <label htmlFor={"docType:" + key}>.. { DOC_TYPES[key] }</label>
-        </li>
-      );
-    }
-
-    // Create the setaside radio list
-    var setasideOptions = [];
-    for(var key in SETASIDES) {
-      setasideOptions.push(
-        <li className="radio" key={key}>
-          <input id={"setaside:" + key} type="radio" value={key} checked={key == this.state.setaside} />
-          <label htmlFor={"setaside:" + key}>{ SETASIDES[key] }</label>
-        </li>
-      );
-    }
-
-    var validAgency = this.state.agency != "null" && this.state.agency != "none";
-    var validDocType = this.state.docType != "";
-    var continueDisabled = !(validAgency && validDocType);
 
     var mainStyle = {
       paddingLeft: 16
@@ -134,34 +92,37 @@ var RequestOverview = React.createClass({
             <input type="text" className="medium-response" value={this.state.programName} onChange={this.handleChange.bind(this, "programName")} />
           </div>
 
-          <div className="question">
-            <div className="question-text">This will be ...</div>
-            <fieldset className="usa-fieldset-inputs">
-              <legend className="usa-sr-only">This will be ...</legend>
-              <ul className="usa-unstyled-list" onChange={this.updateDocType}>
-                {docTypeOptions}
-              </ul>
-            </fieldset>
-          </div>
+          <RadioButtons
+            questionText='This will be ...'
+            renderIfSelected='input'
+            inputLabel='Vehicle name:'
+            radioButtonChange={this.radioButtonChange.bind(this, 'docType')}
+            radioButtonInputChange={this.radioButtonInputChange.bind(this, 'baseNumber')}
+            currentLabel={this.state.docType}
+            options={[
+              {label: 'a new purchase under FAR 13 (Purchase Order)', renderInput: false},
+              {label: 'being issued off an existing Indefinite Delivery Indefinite Quantity (ID/IQ) (Task Order)', renderInput: true, inputLabel: 'Vehicle name:'},
+              {label: 'being ordered off an existing Blanket Purchase Agreement (BPA) (Call)', renderInput: true, inputLabel: 'Vehicle name:'},
+            ]}
+          />
 
-          {this.state.baseNumberNeeded?
-            <div>
-              <h5>Vehicle Name:</h5>
-              <input type="text" className="medium-response" value={this.state.baseNumber} onChange={this.handleChange.bind(this, "baseNumber")} />
-            </div>
-           : null}
+          <RadioButtons
+            questionText='Do you intend to set aside this acquisition for any of the following under FAR part 19?'
+            renderIfSelected='none'
+            radioButtonChange={this.radioButtonChange.bind(this, 'setaside')}
+            currentLabel={this.state.setaside}
+            options={[
+              { label: "Small Business" },
+              { label: "8(a) Business Development Participants" },
+              { label: "HUBZone Small Business Concerns" },
+              { label: "Service-disabled Veteran-owned Small Business Concerns" },
+              { label: "Economically Disadvantaged Women-owned Small Business Concerns" },
+              { label: "The Women-Owned Small Business Program" },
+              { label: "None of the above" }
+            ]}
+          />
 
-          <div className="question">
-            <div className="question-text">Do you intend to set aside this acquisition for any of the following under FAR part 19?</div>
-            <fieldset className="usa-fieldset-inputs">
-              <legend className="usa-sr-only">Do you intend to set aside this acquisition for any of the following under FAR part 19?</legend>
-              <ul className="usa-unstyled-list" onChange={this.handleChange.bind(this, 'setaside')}>
-                {setasideOptions}
-              </ul>
-            </fieldset>
-          </div>
-
-          <Button bsStyle="primary" onClick={this.handleCreateRFQ} disabled={continueDisabled}>{"Let's go!"}</Button>
+          <Button bsStyle="primary" onClick={this.handleCreateRFQ}>{"Let's go!"}</Button>
         </div>
       </div>
     );

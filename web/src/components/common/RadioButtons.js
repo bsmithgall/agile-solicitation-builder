@@ -1,15 +1,19 @@
 var React = require('react');
-var StateMixin = require('../../state_mixin');
 var EditBox = require('./EditBox');
 
 var radioButtonPropTypes = {
   questionText: React.PropTypes.string.isRequired,
-  editBoxIfSelected: React.PropTypes.bool.isRequired,
+  renderIfSelected: React.PropTypes.oneOf(['editBox', 'input', 'text', 'none']).isRequired,
+  radioButtonChange: React.PropTypes.func.isRequired,
+  radioButtonInputChange: React.PropTypes.func,
+  radioButtonEditBoxChange: React.PropTypes.func,
   options: React.PropTypes.arrayOf(
     React.PropTypes.shape({
       label: React.PropTypes.string.isRequired,
       textIfSelected: React.PropTypes.string,
-      editBoxIfSelected: React.PropTypes.element
+      editBox: React.PropTypes.element,
+      inputLabel: React.PropTypes.string,
+      renderInput: React.PropTypes.bool
     })
   )
 }
@@ -17,36 +21,26 @@ var radioButtonPropTypes = {
 var RadioButtons = React.createClass({
   propTypes: radioButtonPropTypes,
 
-  mixins: [StateMixin],
-
-  getInitialState: function() {
-    var elemId = this.props.elemId || Math.floor(Math.random() * 1000);
-    return {
-      elemId: elemId,
-      currentChecked: {label: null}
-    };
+  getLabel: function() {
+    var props = this.props;
+    var filtered = props.options.filter(function(option) {
+      return option.label === props.currentLabel;
+    });
+    return filtered.length === 0 ? { label: null } : filtered[0]
   },
 
-  handleUpdate: function(event, key) {
-    var newState = Object.assign({}, this.state);
-    newState.currentChecked = this.props.options.filter(function(option) {
-      return option.label === event.target.id.split('radioChoice-')[1];
-    })[0];
-    this.setState(newState);
-  },
-
-  makeRadioButtonChoices: function() {
+  makeRadioButtonChoices: function(elemId) {
     var choices = [];
-    var state = this.state;
+    var props = this.props;
     this.props.options.forEach(function(option) {
       choices.push(
         <li className="radio" key={option.label}>
           <input
             type="radio"
-            id={state.elemId + '-radioChoice-' + option.label}
-            checked={state.currentChecked.label === option.label}
+            id={elemId + '-radioChoice-' + option.label}
+            checked={option.label === props.currentLabel}
           />
-          <label htmlFor={state.elemId + '-radioChoice-' + option.label}>{option.label}</label>
+          <label htmlFor={elemId + '-radioChoice-' + option.label}>{option.label}</label>
         </li>
       )
     });
@@ -54,21 +48,42 @@ var RadioButtons = React.createClass({
   },
 
   renderSelection: function() {
-    if (this.props.editBoxIfSelected && this.state.currentChecked.label !== null ) {
-      return (
-        this.state.currentChecked.editBoxIfSelected
-      )
-    } else if (this.state.currentChecked.label !== null) {
-      return (
-        <div
-          className="resulting-text"
-          dangerouslySetInnerHTML={ {__html: this.state.currentChecked.textIfSelected } }
-        />
-      )
+    var currentChecked = this.getLabel();
+    if (currentChecked.label !== null) {
+      switch (this.props.renderIfSelected) {
+        case 'none':
+          return '';
+          break;
+        case 'editBox':
+          return currentChecked.editBox;
+          break;
+        case 'input':
+          if (currentChecked.renderInput) {
+            return (
+              <div>
+                <label htmlFor="">{currentChecked.inputLabel}</label>
+                <input type="text" className="medium-response" onChange={this.props.radioButtonInputChange} />
+              </div>
+            );
+          }
+          break;
+        case 'text':
+          return (
+            <div
+              className="resulting-text"
+              dangerouslySetInnerHTML={ {__html: currentChecked.textIfSelected } }
+            />
+          );
+          break;
+        default:
+          return '';
+          break;
+      }
     }
   },
 
   render: function() {
+    var elemId = this.props.elemId || Math.floor(Math.random() * 1000);
     return (
       <div className="radio-buttons-container">
         <div className="question">
@@ -78,9 +93,9 @@ var RadioButtons = React.createClass({
             <legend className="usa-sr-only">{this.props.questionText}</legend>
             <ul
               className="usa-unstyled-list"
-              onChange={this.handleUpdate}
+              onChange={this.props.radioButtonChange}
             >
-              {this.makeRadioButtonChoices()}
+              {this.makeRadioButtonChoices(elemId)}
             </ul>
           </fieldset>
         </div>

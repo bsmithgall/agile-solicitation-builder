@@ -1,7 +1,9 @@
 var React = require('react');
 var StateMixin = require("../state_mixin");
 var EditBox = require("../components/common/EditBox");
+
 var RadioButtons = require('../components/common/RadioButtons');
+var RadioButtonsMixin = require('../components/common/RadioButtonsMixin')
 
 var STATES = [
   "keyPersonnelIntro",
@@ -14,7 +16,7 @@ var STATES = [
 ];
 
 var Requirement = React.createClass({
-  mixins: [StateMixin],
+  mixins: [StateMixin, RadioButtonsMixin],
   save: function(cb) {
     var data = {};
 
@@ -36,6 +38,7 @@ var Requirement = React.createClass({
       this.setState( componentStates );
     }.bind(this));
   },
+
   render: function() {
     return (
       <div>
@@ -53,7 +56,9 @@ var Requirement = React.createClass({
 
         <RadioButtons
           questionText="What is the highest level of clearance that will be required?"
-          editBoxIfSelected={false}
+          renderIfSelected='text'
+          currentLabel={this.state.clearanceRequired}
+          radioButtonChange={this.radioButtonChange.bind(this, 'clearanceRequired')}
           options={[
             {label: 'None', textIfSelected: 'Contractor personnel will <b>not</b> be required to have a security clearance.'},
             {label: 'Confidential', textIfSelected: 'Contractor personnel will be required to have a security clearance at the <b>Confidential</b> level.'},
@@ -64,7 +69,9 @@ var Requirement = React.createClass({
 
         <RadioButtons
           questionText='Will any of the work be done onsite?'
-          editBoxIfSelected={false}
+          renderIfSelected='text'
+          currentLabel={this.state.onSiteRequired}
+          radioButtonChange={this.radioButtonChange.bind(this, 'onSiteRequired')}
           options={[
             {label: 'Yes', textIfSelected: 'An onsite presence by the contractor will be required.'},
             {label: 'No', textIfSelected: 'An onsite presence by the contractor will not be required.'}
@@ -75,9 +82,11 @@ var Requirement = React.createClass({
 
         <RadioButtons
           questionText='Do you want to require and evaluate key personnel?'
-          editBoxIfSelected={true}
+          renderIfSelected='editBox'
+          currentLabel={this.state.evaluateKeyPersonnel}
+          radioButtonChange={this.radioButtonChange.bind(this, 'evaluateKeyPersonnel')}
           options={[
-            {label: 'Yes', editBoxIfSelected: (
+            {label: 'Yes', editBox: (
               <EditBox
                 text={this.state.keyPersonnelRequirements}
                 editing={this.state.edit === 'keyPersonnelRequirements'}
@@ -85,7 +94,7 @@ var Requirement = React.createClass({
                 onTextChange={this.handleChange.bind(this, 'keyPersonnelRequirements')}>
               </EditBox>
             )},
-            {label: 'No', editBoxIfSelected: (
+            {label: 'No', editBox: (
               <EditBox
                 text={this.state.notEvaluateKeyPersonnel}
                 editing={this.state.edit === 'notEvaluateKeyPersonnel'}
