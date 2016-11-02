@@ -1,73 +1,67 @@
 var React = require('react');
-var StateMixin = require('../../state_mixin');
-
-var initState = {
-  resultString: '',
-  options: {},
-  renderedOptions: {}
-}
 
 var checkboxListPropTypes = {
-  resultString: React.PropTypes.string,
-  resultQuestionText: React.PropTypes.string,
+  resultQuestionText: React.PropTypes.string.isRequired,
   resultQuestionDescription: React.PropTypes.string,
-  options: React.PropTypes.object
+  renderResults: React.PropTypes.bool,
+  handleCheck: React.PropTypes.func.isRequired,
+  options: React.PropTypes.arrayOf(
+    React.PropTypes.shape({
+      id: React.PropTypes.string,
+      inputId: React.PropTypes.string,
+      label: React.PropTypes.string,
+      editBox: React.PropTypes.bool
+    })
+  ),
+  checkboxListEditBoxChange: React.PropTypes.func.isRequired,
+  currentChecked: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
+  currentCheckedInputs: React.PropTypes.objectOf(React.PropTypes.string)
 }
 
 var CheckboxList = React.createClass({
-  mixins: [StateMixin],
-
   propTypes: checkboxListPropTypes,
 
-  getInitialState: function() {
-    for (var option in this.props.options) {
-      initState.options[option] = false;
-      initState.renderedOptions[option] = ''
-    }
-    return initState;
+  componentWillMount: function() {
+    var elemId = this.props.elemId || Math.floor(Math.random() * 1000)
+    this.setState({elemId: elemId})
   },
 
-  handleCheck: function(key, event) {
-    var newState = Object.assign({}, this.state);
-    newState.options[key] = !this.state.options[key];
-
-    checkedOpts = [];
-    for (var option in newState.options) {
-      if (newState.options[option] === true) {
-        checkedOpts.push(this.props.options[option])
-      }
-    }
-    newState.resultString = checkedOpts.join(', ').replace(/,\s([^,]+)$/, ' and $1');
-    this.setState(newState);
+  computeResultString: function() {
+    return this.props.currentChecked.join(', ').replace(/,\s([^,]+)$/, ' and $1');
   },
 
   renderResultEditBoxes: function() {
     var editBoxes = [];
-    for (var option in this.state.options) {
-      if (this.state.options[option] === true) {
+    var props = this.props;
+    var state = this.state;
+    this.props.options.forEach(function(option) {
+      if (props.currentChecked.indexOf(option.label) > -1 && option.editBox === true) {
         editBoxes.push(
-          <div key={option}>
-            <p>{this.props.options[option]}</p>
+          <div key={state.elemId + '-CheckboxList-' + option.id}>
+            <p>{option.label}</p>
             <textarea
               rows="2"
-              value={this.state.renderedOptions[option]}
+              data-label={option.inputId}
+              value={props.currentCheckedInputs[option.id]}
+              onChange={props.checkboxListEditBoxChange}
             />
           </div>
         )
       }
-    }
+    })
     return editBoxes;
   },
 
   renderResultingText: function() {
-    if (this.props.renderResults === true && this.state.resultString.length > 0) {
+    var resultString = this.computeResultString()
+    if (this.props.renderResults === true && resultString.length > 0) {
       return (
         <div className="check-resulting-text">
-          <div className="resulting-text">The users of the product will include {this.state.resultString}</div>
+          <div className="resulting-text">The users of the product will include {resultString}</div>
           <div className="question">
             <div className="question-text">{this.props.resultQuestionText}</div>
             <div className="question-description">{this.props.resultQuestionDescription}</div>
-            {this.renderResultEditBoxes()}
+            {this.renderResultEditBoxes(this.state.elemId)}
           </div>
         </div>
       )
@@ -78,33 +72,38 @@ var CheckboxList = React.createClass({
 
   render: function() {
     var options = [];
-    for (var key in this.props.options) {
+    var props = this.props;
+    var state = this.state;
+    this.props.options.forEach(function(option) {
       options.push(
-        <li className="checkbox" key={key}>
+        <li className="checkbox" key={state.elemId + '-CheckboxList-' + option.id}>
           <input
             type="checkbox"
-            id={"checkboxOptions-" + key}
-            onClick={this.handleCheck.bind(this, key)}
-            checked={this.state.options[key] === true}
+            id={state.elemId + "-checkBoxOptions-" + option.id}
+            onChange={props.handleCheck}
+            data-label={option.label}
+            checked={props.currentChecked.indexOf(option.label) > -1}
           />
 
-          <label htmlFor={"userTypesOptions:" + key}>{this.props.options[key]}</label>
+          <label htmlFor={'checkBoxOptions-' + option.id}>{option.label}</label>
         </li>
       )
-    }
+    });
 
     return (
-      <div className="question">
-        <div className="question-text">{this.props.questionText}</div>
+      <div className="checkbox-list-container">
+        <div className="question checkbox-list">
+          <div className="question-text">{this.props.questionText}</div>
 
-        <fieldset className="usa-fieldset-inputs">
-          <legend className="usa-sr-only">{this.props.questionText}</legend>
-          <ul className="usa-unstyled-list">
-            {options}
-          </ul>
-        </fieldset>
+          <fieldset className="usa-fieldset-inputs">
+            <legend className="usa-sr-only">{this.props.questionText}</legend>
+            <ul className="usa-unstyled-list">
+              {options}
+            </ul>
+          </fieldset>
 
-        {this.renderResultingText()}
+        </div>
+        {this.renderResultingText(this.state.elemId)}
       </div>
     )
   }

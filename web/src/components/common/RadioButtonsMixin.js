@@ -5,10 +5,6 @@ var RadioButtonMixin = {
     this.setState(updatedState)
   },
 
-  radioButtonEditBoxChange: function(key, event) {
-    debugger;
-  },
-
   radioButtonInputChange: function(key, event) {
     var updatedState = {}
     updatedState[key] = event.target.value;

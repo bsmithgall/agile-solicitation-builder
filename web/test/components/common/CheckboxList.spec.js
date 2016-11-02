@@ -8,18 +8,22 @@ describe('Components', function() {
   var component, opts;
   describe('<CheckboxList />', function() {
     beforeEach(function() {
-      opts = {
-        testfoo: 'foo',
-        testbar: 'bar'
-      }
+      opts = [
+        {id: 'testfoo', label: 'foo'},
+        {id: 'testbar', label: 'bar'}
+      ]
 
       component = mount(
         <CheckboxList
           questionText='foo'
-          options={opts}
           renderResults={true}
           resultQuestionText='bar'
           resultQuestionDescription='baz'
+
+          handleCheck={sinon.spy()}
+          options={opts}
+          currentChecked={['foo']}
+          checkboxListEditBoxChange={sinon.spy()}
         />
       )
     })
@@ -29,7 +33,7 @@ describe('Components', function() {
     });
 
     it('properly sets the question-text internal div', function() {
-      expect(component.find('div.question-text').text()).to.equal('foo')
+      expect(component.find('.checkbox-list-container .question.checkbox-list div.question-text').text()).to.equal('foo')
     });
 
     it('properly sets the question ul', function() {

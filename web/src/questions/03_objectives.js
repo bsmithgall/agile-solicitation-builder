@@ -1,7 +1,12 @@
 var React = require('react');
 var StateMixin = require("../state_mixin");
 var EditBox = require("../components/common/EditBox");
+
 var CheckboxList = require('../components/common/CheckboxList');
+var CheckboxListMixin = require('../components/common/CheckboxListMixin');
+
+var RadioButtons = require('../components/common/RadioButtons');
+var RadioButtonsMixin = require('../components/common/RadioButtonsMixin');
 
 var USER_RESEARCH = {
   "done": "Research has already been conducted, either internally or by another vendor. (proceed to product/program vision questionnaire)",
@@ -15,12 +20,12 @@ var KICK_OFF_MEETING = {
   "none": "No Meeting",
 };
 
-var USER_TYPES = {
-  "internal_people": "Internal/Government Employees",
-  "external_people": "External/The Public",
-  "internal_it": "Internal Government IT",
-  "external_it": "External IT",
-};
+var USER_TYPES = [
+  { id: 'internal_people', inputId: 'internal_people_needs', label: 'Internal/Government Employees', editBox: true },
+  { id: 'external_people', inputId: 'external_people_needs', label: 'External/The Public', editBox: true },
+  { id: 'internal_it', inputId: 'internal_it_needs', label: 'Internal Government IT', editBox: true },
+  { id: 'external_it', inputId: 'external_it_needs', label: 'External IT', editBox: true },
+]
 
 var DELIVERABLE_STATES = ["updates", "automatedTesting", "nativeMobile", "mobileWeb", "userTraining", "highTraffic", "devops", "legacySystems", "applicationDesign", "UXrequirements", "programManagement", "systemConfiguration", "helpDesk", "releaseManagement", "dataManagement"];
 
@@ -60,7 +65,7 @@ var STATES = [
 ];
 
 var Objective = React.createClass({
-  mixins: [StateMixin],
+  mixins: [StateMixin, CheckboxListMixin],
   getInitialState: function() {
     var allStates = STATES.concat(DELIVERABLE_STATES).concat(["deliverables"]);
     for (var i=0; i < DELIVERABLE_STATES.length; i++){
@@ -68,6 +73,11 @@ var Objective = React.createClass({
       allStates.push(deliverable + "text");
     }
     var initialStates = getStates(allStates);
+    initialStates.currentUsersChecked = []
+    initialStates.external_it_needs = 'Government employees need to ... \nThis service addresses this/these need(s) by ...'
+    initialStates.external_people_needs = 'The American public needs to ... \nThis service addresses this/these need(s) by ...'
+    initialStates.internal_it_needs = 'Internal IT need to ... \nThis service addresses this/these need(s) by ...'
+    initialStates.internal_people_needs = 'External IT organizations need to ... \nThis service addresses this/these need(s) by ...'
     return initialStates;
   },
   componentDidMount: function() {
@@ -188,10 +198,10 @@ var Objective = React.createClass({
         <div className="responder-instructions">These questions are typically answered by the PM.</div>
 
         <EditBox
-            text={this.state.objectivesIntro}
-            editing={this.state.edit === 'objectivesIntro'}
-            onStatusChange={this.toggleEdit.bind(this, 'objectivesIntro')}
-            onTextChange={this.handleChange.bind(this, 'objectivesIntro')}>
+          text={this.state.objectivesIntro}
+          editing={this.state.edit === 'objectivesIntro'}
+          onStatusChange={this.toggleEdit.bind(this, 'objectivesIntro')}
+          onTextChange={this.handleChange.bind(this, 'objectivesIntro')}>
         </EditBox>
 
         <div className="question">
@@ -212,16 +222,31 @@ var Objective = React.createClass({
 
         <CheckboxList
           questionText='Who will the primary users be?'
-          options={USER_TYPES}
           renderResults={true}
           resultQuestionText='What user needs will this service address?'
           resultQuestionDescription='Please list the user needs for each type of user selected above and how this service will address them.'
+
+          handleCheck={this.checkboxListChange.bind(this, 'currentUsersChecked')}
+          options={USER_TYPES}
+          checkboxListEditBoxChange={this.checkboxListEditBoxChange}
+          currentChecked={this.state.currentUsersChecked}
+          currentCheckedInputs={{
+            external_it: this.state.external_it_needs,
+            external_people: this.state.external_people_needs,
+            internal_it: this.state.internal_it_needs,
+            internal_people: this.state.internal_people_needs,
+          }}
         />
 
         <div className="question">
           <div className="question-text">What languages is your service offered in?</div>
 
-          <textarea className="medium-response" rows="4" value={this.state.languagesRequired} onChange={this.handleChange.bind(this, 'languagesRequired')}></textarea>
+          <textarea
+            className="medium-response"
+            rows="4"
+            value={this.state.languagesRequired}
+            onChange={this.handleChange.bind(this, 'languagesRequired')}>
+          </textarea>
         </div>
 
         <div className="question">
@@ -235,10 +260,10 @@ var Objective = React.createClass({
           </fieldset>
 
           <EditBox
-              text={this.state.userAccess}
-              editing={this.state.edit === 'userAccess'}
-              onStatusChange={this.toggleEdit.bind(this, 'userAccess')}
-              onTextChange={this.handleChange.bind(this, 'userAccess')}>
+            text={this.state.userAccess}
+            editing={this.state.edit === 'userAccess'}
+            onStatusChange={this.toggleEdit.bind(this, 'userAccess')}
+            onTextChange={this.handleChange.bind(this, 'userAccess')}>
           </EditBox>
 
           {(this.state.userResearchStrategy === "vendor")?
@@ -247,10 +272,10 @@ var Objective = React.createClass({
                 <div className="question-text">Understand what people need</div>
 
                 <EditBox
-                    text={this.state.whatPeopleNeed}
-                    editing={this.state.edit === 'whatPeopleNeed'}
-                    onStatusChange={this.toggleEdit.bind(this, 'whatPeopleNeed')}
-                    onTextChange={this.handleChange.bind(this, 'whatPeopleNeed')}>
+                  text={this.state.whatPeopleNeed}
+                  editing={this.state.edit === 'whatPeopleNeed'}
+                  onStatusChange={this.toggleEdit.bind(this, 'whatPeopleNeed')}
+                  onTextChange={this.handleChange.bind(this, 'whatPeopleNeed')}>
                 </EditBox>
               </div>
               <div className="question">
@@ -285,10 +310,10 @@ var Objective = React.createClass({
           <div className="question-text">Make it simple and intuitive</div>
 
           <EditBox
-              text={this.state.simpleAndIntuitive}
-              editing={this.state.edit === 'simpleAndIntuitive'}
-              onStatusChange={this.toggleEdit.bind(this, 'simpleAndIntuitive')}
-              onTextChange={this.handleChange.bind(this, 'simpleAndIntuitive')}>
+            text={this.state.simpleAndIntuitive}
+            editing={this.state.edit === 'simpleAndIntuitive'}
+            onStatusChange={this.toggleEdit.bind(this, 'simpleAndIntuitive')}
+            onTextChange={this.handleChange.bind(this, 'simpleAndIntuitive')}>
           </EditBox>
         </div>
 
@@ -296,21 +321,31 @@ var Objective = React.createClass({
           <div className="question-text">Use data to drive decisions</div>
 
           <EditBox
-              text={this.state.dataDrivenDecisions}
-              editing={this.state.edit === 'dataDrivenDecisions'}
-              onStatusChange={this.toggleEdit.bind(this, 'dataDrivenDecisions')}
-              onTextChange={this.handleChange.bind(this, 'dataDrivenDecisions')}>
+            text={this.state.dataDrivenDecisions}
+            editing={this.state.edit === 'dataDrivenDecisions'}
+            onStatusChange={this.toggleEdit.bind(this, 'dataDrivenDecisions')}
+            onTextChange={this.handleChange.bind(this, 'dataDrivenDecisions')}>
           </EditBox>
         </div>
 
         <div className="sub-heading">Specific Tasks and Deliverables</div>
 
         <EditBox
-            text={this.state.definitionOfDone}
-            editing={this.state.edit === 'definitionOfDone'}
-            onStatusChange={this.toggleEdit.bind(this, 'definitionOfDone')}
-            onTextChange={this.handleChange.bind(this, 'definitionOfDone')}>
+          text={this.state.definitionOfDone}
+          editing={this.state.edit === 'definitionOfDone'}
+          onStatusChange={this.toggleEdit.bind(this, 'definitionOfDone')}
+          onTextChange={this.handleChange.bind(this, 'definitionOfDone')}>
         </EditBox>
+
+        <CheckboxList
+          questionText='Will you require the contractor to attend a kick-off meeting?'
+          renderResults={true}
+
+          handleCheck={this.checkboxListChange.bind(this, 'currentUsersChecked')}
+          options={deliverables_options}
+          checkboxListEditBoxChange={this.checkboxListEditBoxChange}
+          currentChecked={this.state.currentUsersChecked}
+        />
 
         <div className="question">
           <div className="question-text">Which of the following do you anticipate your project will need?</div>
@@ -365,41 +400,34 @@ var Objective = React.createClass({
           </EditBox>
         </div>
 
-        <div className="question">
-          <div className="question-text">Will you require the contractor to attend a kick-off meeting?</div>
-          <fieldset className="usa-fieldset-inputs">
-            <legend className="usa-sr-only">Will you require the contractor to attend a kick-off meeting?</legend>
-            <ul className="usa-unstyled-list" onChange={this.handleChange.bind(this, "kickOffMeeting")}>
-              {kickOffMeetingOptions}
-            </ul>
-          </fieldset>
-
-          {(this.state.kickOffMeeting == "in-person")?
-            <div>
+        <RadioButtons
+          questionText='Will you require the contractor to attend a kickoff meeting?'
+          renderIfSelected='editBox'
+          currentLabel={this.state.kickOffMeeting}
+          radioButtonChange={this.radioButtonChange.bind(this, 'kickOffMeeting')}
+          options={[
+            {label: 'Remote Meeting', editBox: (
               <EditBox
                 text={this.state.kickOffMeetingInPerson}
                 editing={this.state.edit === 'kickOffMeetingInPerson'}
                 onStatusChange={this.toggleEdit.bind(this, 'kickOffMeetingInPerson')}
                 onTextChange={this.handleChange.bind(this, 'kickOffMeetingInPerson')}>
               </EditBox>
-            </div> : null
-          }
-
-          {(this.state.kickOffMeeting == "remote")?
-            <div>
+            )},
+            {label: 'In-person Meeting', editBox: (
               <EditBox
                 text={this.state.kickOffMeetingRemote}
                 editing={this.state.edit === 'kickOffMeetingRemote'}
                 onStatusChange={this.toggleEdit.bind(this, 'kickOffMeetingRemote')}
                 onTextChange={this.handleChange.bind(this, 'kickOffMeetingRemote')}>
               </EditBox>
-            </div>: null
-          }
+            )},
+            {label: 'Remote', editBox: (
+              <div className="resulting-text">A formal kick-off meeting will not be required.</div>
+            )}
+          ]}
+        />
 
-          {(this.state.kickOffMeeting === "none")?
-            <div className="resulting-text">A formal kick-off meeting will not be required.</div> : null
-          }
-        </div>
       </div>
     );
   },

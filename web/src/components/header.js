@@ -18,8 +18,7 @@ var Header = React.createClass({
             An official website of the United States Government
           </span>
           <span className="usa-disclaimer-stage">
-            This site is currently in alpha.
-            <a href="https://github.com/18F/agile-solicitation-builder/issues" target="_blank">Help us improve</a>
+            This site is currently in alpha. <a href="https://github.com/18F/agile-solicitation-builder/issues" target="_blank">Help us improve</a>
           </span>
         </div>
         <div className="usa-grid">
