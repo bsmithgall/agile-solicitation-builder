@@ -22,12 +22,12 @@ var Header = React.createClass({
             <a href="https://github.com/18F/agile-solicitation-builder/issues" target="_blank">Help us improve</a>
           </span>
         </div>
-        <LogoutButton className="top-right-auth-button" hideIfLoggedOut={true} />
         <div className="usa-grid">
           <div className="usa-width-one-whole header">
             <h1>
               <IndexLink to="/" style={inheritStyle}>Agile Solicitation Builder</IndexLink>
             </h1>
+            <LogoutButton className="top-right-auth-button" hideIfLoggedOut={true} />
           </div>
         </div>
       </div>

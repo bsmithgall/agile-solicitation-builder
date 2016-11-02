@@ -1,6 +1,8 @@
 var RadioButtonMixin = {
   radioButtonChange: function(key, event) {
-    this.setState({[key]: event.target.id.split('radioChoice-')[1]})
+    var updatedState = {}
+    updatedState[key] = event.target.id.split('radioChoice-')[1]
+    this.setState(updatedState)
   },
 
   radioButtonEditBoxChange: function(key, event) {
@@ -8,7 +10,9 @@ var RadioButtonMixin = {
   },
 
   radioButtonInputChange: function(key, event) {
-    this.setState({[key]: event.target.value});
+    var updatedState = {}
+    updatedState[key] = event.target.value;
+    this.setState(updatedState);
   }
 }
 
