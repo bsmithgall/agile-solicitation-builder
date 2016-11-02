@@ -1,42 +1,42 @@
 var React = require('react');
 var StateMixin = require("../state_mixin");
-var EditBox = require("../edit_box");
+var EditBox = require("../components/common/EditBox");
 
 var STATES = [
-	"invoicing",
-	"billingAddress",
-	"duplicateInvoice",
+  "invoicing",
+  "billingAddress",
+  "duplicateInvoice",
 ];
 
 var PostAward = React.createClass({
-	mixins: [StateMixin],
-	getInitialState: function() {
-		var initialStates = getStates(STATES);
-		return initialStates;
-	},
-	componentDidMount: function() {
-		var rfqId = getId(window.location.hash);
+  mixins: [StateMixin],
+  getInitialState: function() {
+    var initialStates = getStates(STATES);
+    return initialStates;
+  },
+  componentDidMount: function() {
+    var rfqId = getId(window.location.hash);
     get_data(5, rfqId, function(content){
-    	var componentStates = getComponents(content["data"]);
+      var componentStates = getComponents(content["data"]);
       this.setState( componentStates );
     }.bind(this));
   },
   save: function(cb) {
-		var data = {};
-		
-		for (i=0; i < STATES.length; i++){
-			var stateName = STATES[i];
-			data[stateName] = this.state[stateName];
-		}
+    var data = {};
 
-		var rfqId = getId(window.location.hash);
+    for (i=0; i < STATES.length; i++){
+      var stateName = STATES[i];
+      data[stateName] = this.state[stateName];
+    }
+
+    var rfqId = getId(window.location.hash);
     put_data(5, "get_content", rfqId, data, cb);
   },
-	render: function() {
-		var placeholderText = "Mailing Address                                          Phone Number                                                 Fax Number";
-		return (
-			<div>
-				<div className="page-heading">Invoicing &amp; Funding</div>
+  render: function() {
+    var placeholderText = "Mailing Address                                          Phone Number                                                 Fax Number";
+    return (
+      <div>
+        <div className="page-heading">Invoicing &amp; Funding</div>
         <div className="responder-instructions">The content in this section is typically decided on by the CO.</div>
         <p>If you wish to add additional text you may do so in the resulting word document.</p>
 
@@ -59,9 +59,9 @@ var PostAward = React.createClass({
             onStatusChange={this.toggleEdit.bind(this, 'duplicateInvoice')}
             onTextChange={this.handleChange.bind(this, 'duplicateInvoice')}>
         </EditBox>
-			</div>
-		);
-	},
+      </div>
+    );
+  },
 });
 
 

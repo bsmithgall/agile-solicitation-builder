@@ -152,6 +152,11 @@ $med-width-plus-side-nav: $medium-screen + $width-nav-sidebar;
 .header {
   border-bottom: solid 1px #aeb0b5;
   margin-bottom: 15px;
+
+  h1 {
+    display: inline-block;
+    margin-top: 1.5rem;
+  }
 }
 
 .term {

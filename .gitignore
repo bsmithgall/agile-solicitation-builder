@@ -10,6 +10,7 @@ venv/
 node_modules/
 bower_components/
 build/
+npm-debug.log
 
 # other
 cf-ssh.yml
